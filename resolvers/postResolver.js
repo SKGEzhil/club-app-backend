@@ -1,6 +1,7 @@
 const postModel = require('../models/postModel');
 const ClubModel = require('../models/clubModel');
 const admin = require("firebase-admin");
+const {GraphQLError} = require("graphql/index");
 
 const postResolver = {
     Query: {
@@ -25,9 +26,24 @@ const postResolver = {
     },
 
     Mutation: {
-        createPost: async (_, { content, imageUrl, createdBy, dateCreated, club }) => {
+        createPost: async (_, { content, imageUrl, createdBy, dateCreated, club }, context) => {
 
             console.log("club", club)
+
+            const club_ = await ClubModel.findOne({_id: club});
+            const isAuthorized = context.user.role === 'admin' || club_.members.includes(context.user.id);
+
+            if(!isAuthorized) {
+                console.log('Unauthorized')
+                throw new GraphQLError('You are not authorized to perform this action.', {
+                    extensions: {
+                        code: 'FORBIDDEN',
+                        status: 404,
+                        message: 'Only club members can create posts.'
+                    },
+                });
+            }
+
             try {
                 const newPost = new postModel({
                     content: content,

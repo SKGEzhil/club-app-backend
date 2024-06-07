@@ -1,4 +1,5 @@
 const userModel = require('../models/userModel');
+const {GraphQLError} = require('graphql');
 
 const userResolver = {
     Query: {
@@ -41,8 +42,20 @@ const userResolver = {
             }
         },
 
-        updateUser: async (_, { email, role }) => {
-            try {
+        updateUser: async (_, { email, role }, context) => {
+
+                console.log('role', context.user.role)
+                if (context.user.role !== 'admin') {
+                    console.log('Unauthorized')
+                    throw new GraphQLError('You are not authorized to perform this action.', {
+                        extensions: {
+                            code: 'FORBIDDEN',
+                            status: 404,
+                            message: 'You are not authorized to perform this action.'
+                        },
+                    });
+                }
+
                 const userId = (await userModel.findOne({ email: email }))._id;
                 const updatedUser = await userModel.findByIdAndUpdate(
                     userId,
@@ -50,9 +63,6 @@ const userResolver = {
                     { new: true }
                 );
                 return updatedUser;
-            } catch (err) {
-                throw new Error('Error updating user');
-            }
         },
 
     },

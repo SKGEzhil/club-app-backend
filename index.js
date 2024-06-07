@@ -9,6 +9,8 @@ const dbUrl = 'mongodb://localhost:27017/club';
 const typeDefs = require('./graphql/schema');
 const resolvers = require('./graphql/resolver');
 
+const userModel = require('./models/userModel');
+
 var serviceAccount = require("./serviceAccountKey.json");
 
 // Import the functions you need from the SDKs you need
@@ -44,6 +46,9 @@ mongoose.connect(dbUrl, { useNewUrlParser: true, useUnifiedTopology: true })
 
 const server = new ApolloServer({ typeDefs, resolvers});
 
+const googleVerification = require('./middlewares/googleVerification');
+const verifyToken = require('./middlewares/verifyToken');
+
 app.get('/hello', (req, res) => {
 
     const sendNotification = require('./utils/sendNotification');
@@ -63,12 +68,24 @@ app.get('/hello', (req, res) => {
     res.send('Hello World');
 });
 
-
+app.use('/googleVerification', googleVerification);
+app.use('/graphql', verifyToken);
 
 async function startApolloServer() {
     const server = new ApolloServer({
         typeDefs,
-        resolvers
+        resolvers,
+        context: async ({req}) => {
+
+            const user = await userModel.findOne({email: req.email});
+
+            return {
+                user: {
+                    role: user.role,
+                    id: user.id,
+                }
+            }
+        }
     });
 
     await server.start();
