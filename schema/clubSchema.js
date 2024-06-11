@@ -14,6 +14,9 @@ const clubTypeDefs = gql`
         id: ID!
         name: String!
         email: String!
+        fcmToken: String!
+        role: String!
+        photoUrl: String!
     }
     
     type Query {
@@ -23,7 +26,9 @@ const clubTypeDefs = gql`
     
     type Mutation {
         createClub(name: String!, description: String!, imageUrl: String!, createdBy: String!): Club
-        joinClub(clubId: ID!, userId: ID!): Club
+        updateClub(id: ID!, name: String, description: String, imageUrl: String): Club
+        addToClub(clubId: ID!, userEmail: String!): Club
+        removeFromClub(clubId: ID!, userEmail: String!): Club
     }
     
 `;

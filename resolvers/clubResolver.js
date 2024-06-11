@@ -1,6 +1,7 @@
 
 const ClubModel = require('../models/clubModel');
 const UserModel = require('../models/userModel');
+const {GraphQLError} = require("graphql/index");
 
 const clubResolver = {
 
@@ -45,24 +46,109 @@ const clubResolver = {
             }
         },
 
-        joinClub: async (_, { clubId, userId }) => {
-            try {
-                const club = await ClubModel.findById(clubId);
-                if (!club) {
-                    throw new Error('Club not found');
-                }
-                const user = await UserModel.findById(userId);
-                if (!user) {
-                    throw new Error('User not found');
-                }
+        updateClub: async (_, { id, name, description, imageUrl }, context) => {
 
-                club.members.push(userId);
+            const club_ = await ClubModel.findOne({_id: id});
+            const isAuthorized = context.user.role === 'admin' || club_.members.includes(context.user.id);
+
+            if(!isAuthorized) {
+                console.log('Unauthorized')
+                throw new GraphQLError('You are not authorized to perform this action.', {
+                    extensions: {
+                        code: 'FORBIDDEN',
+                        status: 404,
+                        message: 'Only club members or admins can change club info'
+                    },
+                });
+            }
+
+            try {
+                const club = await ClubModel.findByIdAndUpdate(
+                    id,
+                    { name, description, imageUrl },
+                    { new: true }
+                );
+                club.save();
+            } catch (err) {
+                throw new Error('Error updating club');
+            }
+
+        },
+
+        addToClub: async (_, { clubId, userEmail }, context) => {
+
+            const club = await ClubModel.findOne({_id: clubId});
+            const isAuthorized = context.user.role === 'admin' || club.members.includes(context.user.id);
+
+            if(!isAuthorized) {
+                console.log('Unauthorized')
+                throw new GraphQLError('You are not authorized to perform this action.', {
+                    extensions: {
+                        code: 'FORBIDDEN',
+                        status: 404,
+                        message: 'Only club members or admins can add or remove users.'
+                    },
+                });
+            }
+
+            const user = await UserModel.findOne({ email: userEmail });
+
+            if (!user) {
+                throw new GraphQLError('You are not authorized to perform this action.', {
+                    extensions: {
+                        code: 'FORBIDDEN',
+                        status: 404,
+                        message: 'User not found.'
+                    },
+                });
+            }
+
+            try {
+                club.members.push(user._id);
                 await club.save();
                 return club;
             } catch (err) {
                 throw new Error('Error joining club');
             }
+        },
+
+        removeFromClub: async (_, { clubId, userEmail }, context) => {
+
+            const club = await ClubModel.findOne({_id: clubId});
+            const isAuthorized = context.user.role === 'admin' || club.members.includes(context.user.id);
+
+            if(!isAuthorized) {
+                console.log('Unauthorized')
+                throw new GraphQLError('You are not authorized to perform this action.', {
+                    extensions: {
+                        code: 'FORBIDDEN',
+                        status: 404,
+                        message: 'Only club members or admins can add or remove users.'
+                    },
+                });
+            }
+
+            try {
+                const user = await UserModel.findOne({ email: userEmail });
+                if (!user) {
+                    throw new Error('User not found');
+                }
+
+                console.log('club.members', club.members)
+
+                const index = club.members.indexOf(user._id);
+                console.log('index', index)
+                if (index > -1) {
+                    club.members.splice(index, 1);
+                }
+                await club.save();
+                console.log('club.members', club.members)
+                return club;
+            } catch (err) {
+                throw new Error('Error leaving club');
+            }
         }
+
     }
 
 }

@@ -24,14 +24,15 @@ const userResolver = {
     },
 
     Mutation: {
-        createUser: async (_, { name, email, fcmToken }) => {
+        createUser: async (_, { name, email, fcmToken, photoUrl }) => {
             try {
                 console.log("name", name);
                 const newUser = new userModel({
                     name: name,
                     email: email,
                     fcmToken: fcmToken,
-                    role: 'user'
+                    role: 'user',
+                    photoUrl: photoUrl
                 });
                 await newUser.save();
                 const userId = newUser._id;

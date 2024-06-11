@@ -60,6 +60,8 @@ const postResolver = {
                 console.log("clubbb", clubbb.name)
                 const message = {
                     data: {
+                        postId: `${postId}`,
+                        clubId: `${newPost.club}`,
                         largeIcon: `${(await  ClubModel.findOne({_id: club})).imageUrl}`, // *
                         image: `${imageUrl}`,
                         title: `${(await  ClubModel.findOne({_id: club})).name}`,
@@ -75,24 +77,64 @@ const postResolver = {
             }
         },
 
-        updatePost: async (_, { id, title, content, imageUrl }) => {
+        updatePost: async (_, { id, content }, context) => {
+
+            const post_ = await postModel.findOne({_id: id});
+            console.log("post_", post_.id)
+            const club_ = await ClubModel.findOne({_id: post_.club});
+            console.log("club_", club_.name)
+            const isAuthorized = context.user.role === 'admin' || club_.members.includes(context.user.id);
+
+            if(!isAuthorized) {
+                console.log('Unauthorized')
+                throw new GraphQLError('You are not authorized to perform this action.', {
+                    extensions: {
+                        code: 'FORBIDDEN',
+                        status: 404,
+                        message: 'Only club members can modify posts.'
+                    },
+                });
+            }
+
             try {
                 const post = await postModel.findByIdAndUpdate(
                     id,
-                    { title, content, imageUrl },
+                    { content },
                     { new: true }
-                );
+                ).populate('createdBy').populate('club');
+                console.log("post", post.id)
                 return post;
             } catch (err) {
+                console.log(err)
                 throw new Error('Error updating post');
             }
         },
 
-        deletePost: async (_, { id }) => {
+        deletePost: async (_, { id }, context) => {
+
+            // const post_ = await postModel.findOne({_id: id});
+            // console.log("post_", post_.id)
+            // const club_ = await ClubModel.findOne({_id: post_.club});
+            // console.log("club_", club_.name)
+            // const isAuthorized = context.user.role === 'admin' || club_.members.includes(context.user.id);
+            //
+            // if(!isAuthorized) {
+            //     console.log('Unauthorized')
+            //     throw new GraphQLError('You are not authorized to perform this action.', {
+            //         extensions: {
+            //             code: 'FORBIDDEN',
+            //             status: 404,
+            //             message: 'Only club members can modify or delete posts.'
+            //         },
+            //     });
+            // }
+
             try {
-                const post = await postModel.findByIdAndRemove(id);
-                return post;
+                const post = await postModel.findByIdAndDelete(id);
+                console.log("post", !!post)
+                return !!post;
             } catch (err) {
+                console.log(err)
                 throw new Error('Error deleting post');
             }
         }

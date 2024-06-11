@@ -18,6 +18,10 @@ const userModel = new mongoose.Schema({
         type: String,
         required: true,
         enum: ['user', 'admin']
+    },
+    photoUrl: {
+        type: String,
+        required: false
     }
 
 });

@@ -15,6 +15,9 @@ const postTypeDefs = gql`
         id: ID!
         name: String!
         email: String!
+        fcmToken: String!
+        role: String!
+        photoUrl: String!
     }
     
     type Query {
@@ -24,7 +27,7 @@ const postTypeDefs = gql`
     
     type Mutation {
         createPost(content: String!, imageUrl: String!, createdBy: String!, dateCreated: String!, club: String!): Post
-        updatePost(id: ID!, content: String, imageUrl: String): Post
+        updatePost(id: ID!, content: String): Post
         deletePost(id: ID!): Boolean
     }
 

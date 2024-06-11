@@ -8,6 +8,7 @@ const userTypeDefs = gql`
         email: String!
         fcmToken: String!
         role: String!
+        photoUrl: String!
     }
     
     type Query {
@@ -16,7 +17,7 @@ const userTypeDefs = gql`
     }
     
     type Mutation {
-        createUser(name: String!, email: String!, fcmToken: String!): User
+        createUser(name: String!, email: String!, fcmToken: String!, photoUrl: String!): User
         updateUser(email: String!, role: String!): User
     }
 
