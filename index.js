@@ -4,7 +4,7 @@ const { ApolloServer } = require('apollo-server-express');
 // const { ApolloServer } = require('apollo-server');
 const app = express();
 
-const dbUrl = 'mongodb://localhost:27017/club2';
+const dbUrl = 'mongodb://localhost:27017/club';
 
 const typeDefs = require('./graphql/schema');
 const resolvers = require('./graphql/resolver');
