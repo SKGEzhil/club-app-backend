@@ -17,7 +17,7 @@ const userTypeDefs = gql`
     }
     
     type Mutation {
-        createUser(name: String!, email: String!, fcmToken: String!, photoUrl: String!): User
+        createUser(name: String!, email: String!, photoUrl: String!): User
         updateUser(email: String!, role: String!): User
     }
 

@@ -112,22 +112,22 @@ const postResolver = {
 
         deletePost: async (_, { id }, context) => {
 
-            // const post_ = await postModel.findOne({_id: id});
-            // console.log("post_", post_.id)
-            // const club_ = await ClubModel.findOne({_id: post_.club});
-            // console.log("club_", club_.name)
-            // const isAuthorized = context.user.role === 'admin' || club_.members.includes(context.user.id);
-            //
-            // if(!isAuthorized) {
-            //     console.log('Unauthorized')
-            //     throw new GraphQLError('You are not authorized to perform this action.', {
-            //         extensions: {
-            //             code: 'FORBIDDEN',
-            //             status: 404,
-            //             message: 'Only club members can modify or delete posts.'
-            //         },
-            //     });
-            // }
+            const post_ = await postModel.findOne({_id: id});
+            console.log("post_", post_.id)
+            const club_ = await ClubModel.findOne({_id: post_.club});
+            console.log("club_", club_.name)
+            const isAuthorized = context.user.role === 'admin' || club_.members.includes(context.user.id);
+
+            if(!isAuthorized) {
+                console.log('Unauthorized')
+                throw new GraphQLError('You are not authorized to perform this action.', {
+                    extensions: {
+                        code: 'FORBIDDEN',
+                        status: 404,
+                        message: 'Only club members or admins can modify or delete posts.'
+                    },
+                });
+            }
 
             try {
                 const post = await postModel.findByIdAndDelete(id);

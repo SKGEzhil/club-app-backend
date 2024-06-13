@@ -23,19 +23,20 @@ module.exports = (req, res, next) => {
             if (isVerified === 'true') {
                 // User is verified, create a JWT token
 
-                const user = await userModel.findOne({email: data.email})
-                const jwtToken = jwt.sign({email: data.email, role: user.role}, process.env.JWT_SECRET);
+                const jwtToken = jwt.sign({email: data.email}, process.env.JWT_SECRET);
 
                 // Send the JWT token in the response
-                res.status(200).send({auth: true, token: jwtToken});
+                res.status(200).send({status: 'ok', auth: true, token: jwtToken});
             } else {
                 res.status(401).json({
+                    status: 'error',
                     message: "unauthorized user"
                 });
             }
         })
     } catch (error) {
         return res.status(401).json({
+            status: 'error',
             message: "Auth failed"
         });
     }

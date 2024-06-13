@@ -1,6 +1,7 @@
 
 const ClubModel = require('../models/clubModel');
 const UserModel = require('../models/userModel');
+const PostModel = require('../models/postModel');
 const {GraphQLError} = require("graphql/index");
 
 const clubResolver = {
@@ -40,6 +41,13 @@ const clubResolver = {
                 await newClub.save();
                 const clubId = newClub._id;
                 console.log("clubId", clubId);
+                await PostModel.create({
+                    content: `Welcome to the club! Get to know about the events of ${name} here.`,
+                    imageUrl: '',
+                    createdBy: createdBy,
+                    dateCreated: new Date(),
+                    club: clubId
+                })
                 return ClubModel.findById(clubId).populate('members').populate('createdBy');
             } catch (err) {
                 throw new Error('Error creating club');
@@ -146,6 +154,30 @@ const clubResolver = {
                 return club;
             } catch (err) {
                 throw new Error('Error leaving club');
+            }
+        },
+
+        deleteClub: async (_, { id }, context) => {
+            const isAuthorized = context.user.role === 'admin';
+
+            if(!isAuthorized) {
+                console.log('Unauthorized')
+                throw new GraphQLError('You are not authorized to perform this action.', {
+                    extensions: {
+                        code: 'FORBIDDEN',
+                        status: 404,
+                        message: 'Only admins can delete a club.'
+                    },
+                });
+            }
+
+            try {
+                console.log('id', id);
+                const club = await ClubModel.findByIdAndDelete(id);
+                await PostModel.deleteMany({club: id});
+                return !!club;
+            } catch (err) {
+                throw new Error('Error deleting club');
             }
         }
 

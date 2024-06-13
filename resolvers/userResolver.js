@@ -24,13 +24,13 @@ const userResolver = {
     },
 
     Mutation: {
-        createUser: async (_, { name, email, fcmToken, photoUrl }) => {
+        createUser: async (_, { name, email, photoUrl }) => {
             try {
                 console.log("name", name);
                 const newUser = new userModel({
                     name: name,
                     email: email,
-                    fcmToken: fcmToken,
+                    fcmToken: 'fcmToken',
                     role: 'user',
                     photoUrl: photoUrl
                 });
@@ -39,6 +39,7 @@ const userResolver = {
                 console.log("userId", userId);
                 return userModel.findById(userId);
             } catch (err) {
+                console.log(err);
                 throw new Error('Error creating user');
             }
         },

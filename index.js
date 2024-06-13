@@ -4,7 +4,7 @@ const { ApolloServer } = require('apollo-server-express');
 // const { ApolloServer } = require('apollo-server');
 const app = express();
 
-const dbUrl = 'mongodb://localhost:27017/club';
+const dbUrl = 'mongodb://localhost:27017/club2';
 
 const typeDefs = require('./graphql/schema');
 const resolvers = require('./graphql/resolver');
@@ -78,11 +78,13 @@ async function startApolloServer() {
         context: async ({req}) => {
 
             const user = await userModel.findOne({email: req.email});
-
+            const role = user == null ? 'user' : user.role;
+            const id = user == null ? '' : user.id;
+            // console.log('USER', user);
             return {
                 user: {
-                    role: user.role,
-                    id: user.id,
+                    role: role,
+                    id: id,
                 }
             }
         }

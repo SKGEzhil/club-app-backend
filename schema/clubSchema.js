@@ -29,6 +29,7 @@ const clubTypeDefs = gql`
         updateClub(id: ID!, name: String, description: String, imageUrl: String): Club
         addToClub(clubId: ID!, userEmail: String!): Club
         removeFromClub(clubId: ID!, userEmail: String!): Club
+        deleteClub(id: ID!): Boolean
     }
     
 `;
