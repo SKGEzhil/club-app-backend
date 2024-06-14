@@ -4,7 +4,7 @@ const { ApolloServer } = require('apollo-server-express');
 // const { ApolloServer } = require('apollo-server');
 const app = express();
 
-const dbUrl = 'mongodb://localhost:27017/club';
+const dbUrl = process.env.DB_URL;
 
 const typeDefs = require('./graphql/schema');
 const resolvers = require('./graphql/resolver');
@@ -25,12 +25,12 @@ const admin = require("firebase-admin");
 // Your web app's Firebase configuration
 const firebaseConfig = {
     credential: admin.credential.cert(serviceAccount),
-    apiKey: "AIzaSyB3pYKZjyi6WALlWMbXf8_bXM6IcF57hgo",
-    authDomain: "clubs-app-firebase.firebaseapp.com",
-    projectId: "clubs-app-firebase",
-    storageBucket: "clubs-app-firebase.appspot.com",
-    messagingSenderId: "1034110949886",
-    appId: "1:1034110949886:web:3331711f4e886ce4a708af"
+    apiKey: process.env.FIREBASE_API_KEY,
+    authDomain: process.env.FIREBASE_AUTH_DOMAIN,
+    projectId: process.env.FIREBASE_PROJECT_ID,
+    storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
+    messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
+    appId: process.env.FIREBASE_APP_ID
 };
 
 // Initialize Firebase
