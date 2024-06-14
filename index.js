@@ -93,8 +93,8 @@ async function startApolloServer() {
     await server.start();
     server.applyMiddleware({ app, path: "/graphql" });
 
-    app.listen({ port: 4000 }, () =>
-        console.log(`Server ready at http://localhost:4000${server.graphqlPath}`)
+    app.listen({ port: 80 }, () =>
+        console.log(`Server ready at http://localhost:80${server.graphqlPath}`)
     );
 
 }
