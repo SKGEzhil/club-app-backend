@@ -3,6 +3,7 @@ const eventModel = require('../models/eventModel');
 const admin = require("firebase-admin");
 const {GraphQLError} = require("graphql/index");
 const postModel = require("../models/postModel");
+const sendNotification = require("../utils/sendNotification");
 
 const eventResolver = {
     Query: {
@@ -56,13 +57,26 @@ const eventResolver = {
                     club: club
                 });
                 await newEvent.save();
+                const message = {
+                    data: {
+                        largeIcon: `${(await  ClubModel.findOne({_id: club})).imageUrl}`, // *
+                        image: `${bannerUrl}`,
+                        title: `${name}`,
+                        body: `${description}`,
+                    },
+                    topic: "clubs-app-fcm",
+                };
+                console.log(message.data.largeIcon)
+                sendNotification(message);
                 return newEvent.populate('club');
             } catch (err) {
                 throw new Error("Error creating event");
             }
         },
 
-        updatePost: async (_, { id, name, description, date, location, bannerUrl, club }, context) => {
+        updateEvent: async (_, { id, name, description, date, location, club }, context) => {
+
+                console.log("HELLO")
 
                 const club_ = await ClubModel.findOne({_id: club});
                 const isAuthorized = context.user.role === 'admin' || club_.members.includes(context.user.id);
@@ -79,11 +93,24 @@ const eventResolver = {
                 }
 
                 try {
+                    console.log("event", 'event')
                     const event = await eventModel.findByIdAndUpdate(
                         id,
-                        { name, description, date, location, bannerUrl},
+                        { name, description, date, location },
                         { new: true }
                     );
+                    const message = {
+                        data: {
+                            largeIcon: `${(await  ClubModel.findOne({_id: club})).imageUrl}`, // *
+                            image: `${event.bannerUrl}`,
+                            title: `${name}`,
+                            body: `${description}`,
+                        },
+                        topic: "clubs-app-fcm",
+                    };
+                    console.log(message.data.largeIcon)
+                    sendNotification(message);
+                    console.log("event", event)
                     return event.populate('club');
                 } catch (err) {
                     throw new Error("Error updating event");

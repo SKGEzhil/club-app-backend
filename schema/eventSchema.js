@@ -29,7 +29,7 @@ const eventTypeDefs = gql`
     
     type Mutation {
         createEvent(name: String!, description: String!, date: String!, location: String!, bannerUrl: String!, club: String!): Event
-        updateEvent(id: ID!, name: String!, description: String!, date: String!, location: String!, bannerUrl: String!, club: String!): Event
+        updateEvent(id: ID!, name: String!, description: String!, date: String!, location: String!, club: String!): Event
         deleteEvent(id: ID!): Boolean
     }
 
