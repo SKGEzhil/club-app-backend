@@ -67,7 +67,7 @@ const postResolver = {
                         title: `${(await  ClubModel.findOne({_id: club})).name}`,
                         body: `${content}`,
                     },
-                    topic: "clubs-app-fcm",
+                    topic: process.env.FCM_TOPIC,
                 };
                 console.log(message.data.largeIcon)
                 sendNotification(message);

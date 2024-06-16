@@ -64,7 +64,7 @@ const eventResolver = {
                         title: `${name}`,
                         body: `${description}`,
                     },
-                    topic: "clubs-app-fcm",
+                    topic: process.env.FCM_TOPIC,
                 };
                 console.log(message.data.largeIcon)
                 sendNotification(message);
@@ -106,7 +106,7 @@ const eventResolver = {
                             title: `${name}`,
                             body: `${description}`,
                         },
-                        topic: "clubs-app-fcm",
+                        topic: process.env.FCM_TOPIC
                     };
                     console.log(message.data.largeIcon)
                     sendNotification(message);

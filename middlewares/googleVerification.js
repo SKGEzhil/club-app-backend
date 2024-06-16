@@ -3,6 +3,7 @@ const path = require('path');
 const userModel = require('../models/userModel');
 
 require('dotenv').config({path: path.resolve(__dirname, '../config.env')});
+const validateEmail = require('../utils/validateEmail');
 
 module.exports = (req, res, next) => {
     try {
@@ -22,10 +23,14 @@ module.exports = (req, res, next) => {
             console.log("isVerified", isVerified);
             if (isVerified === 'true') {
                 // User is verified, create a JWT token
-
+                const emailValidity = validateEmail(data.email);
+                if (emailValidity.status === 'error') {
+                    return res.status(401).json({
+                        status: 'error',
+                        message: "Please login with a valid IITH email id"
+                    });
+                }
                 const jwtToken = jwt.sign({email: data.email}, process.env.JWT_SECRET);
-
-                // Send the JWT token in the response
                 res.status(200).send({status: 'ok', auth: true, token: jwtToken});
             } else {
                 res.status(401).json({

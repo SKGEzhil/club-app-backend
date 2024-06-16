@@ -57,10 +57,10 @@ app.get('/hello', (req, res) => {
         data: {
             largeIcon: 'https://via.placeholder.com/100x100', // *
             image: 'https://via.placeholder.com/200x200',
-            title: 'SKG...',
-            body: 'Hellooo3 from SKG',
+            title: 'Hello World',
+            body: 'Hello World',
         },
-        topic: "clubs-app-fcm",
+        topic: process.env.FCM_TOPIC,
     };
 
     sendNotification(message);
@@ -93,7 +93,7 @@ async function startApolloServer() {
     await server.start();
     server.applyMiddleware({ app, path: "/graphql" });
 
-    app.listen({ port: 80 }, () =>
+    app.listen({ port: 4000 }, () =>
         console.log(`Server ready at http://localhost:80${server.graphqlPath}`)
     );
 
