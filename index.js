@@ -13,13 +13,6 @@ const userModel = require('./models/userModel');
 
 var serviceAccount = require("./serviceAccountKey.json");
 
-// Import the functions you need from the SDKs you need
-const { initializeApp } = require("firebase/app");
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
-
-
-
 const admin = require("firebase-admin");
 
 // Your web app's Firebase configuration
@@ -50,22 +43,9 @@ const googleVerification = require('./middlewares/googleVerification');
 const verifyToken = require('./middlewares/verifyToken');
 
 app.get('/hello', (req, res) => {
-
-    const sendNotification = require('./utils/sendNotification');
-
-    const message = {
-        data: {
-            largeIcon: 'https://via.placeholder.com/100x100', // *
-            image: 'https://via.placeholder.com/200x200',
-            title: 'Hello World',
-            body: 'Hello World',
-        },
-        topic: process.env.FCM_TOPIC,
-    };
-
-    sendNotification(message);
-
-    res.send('Hello World');
+    res.json({
+        message: 'Hello World'
+    });
 });
 
 app.use('/googleVerification', googleVerification);
@@ -93,8 +73,8 @@ async function startApolloServer() {
     await server.start();
     server.applyMiddleware({ app, path: "/graphql" });
 
-    app.listen({ port: 4000 }, () =>
-        console.log(`Server ready at http://localhost:80${server.graphqlPath}`)
+    app.listen({ port: process.env.PORT }, () =>
+        console.log(`Server ready at http://localhost:${process.env.PORT}${server.graphqlPath}`)
     );
 
 }
