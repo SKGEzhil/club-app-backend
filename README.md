@@ -29,7 +29,16 @@ Follow these steps to setup and run the backend locally:
 5. **Environment Variables**: Add the following environment variables:
 
     ```bash
-   JWT_SECRET=your_secret_key
+   JWT_SECRET="your_secret_key"
+   DB_URL="database_url"
+   FIREBASE_API_KEY="firebase_api_key"
+   FIREBASE_APP_ID="firebase_app_id"
+   FIREBASE_AUTH_DOMAIN="firebase_auth_domain"
+   FIREBASE_MESSAGING_ID="firebase_messaging_id"
+   FIREBASE_PROCESS_ID="firebase_process_id"
+   FIREBASE_STORAGE_BUCKET="firebase_storage_bucket"
+   FCM_TOPIC="fcm_topic"
+   PORT="80"
    ```
    
 6. **Run the Server**: Run the following command to start the server:
